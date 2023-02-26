@@ -10,6 +10,11 @@ services:
     restart: on-failure
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+  zookeeper:
+    image: zookeeper
+    restart: on-failure
+    ports:
+      - "2181:2181"
 networks:
   backend:
     driver: bridge

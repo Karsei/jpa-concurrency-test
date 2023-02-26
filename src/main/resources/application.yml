@@ -2,6 +2,13 @@ server:
   port: 1011
 
 spring:
+  application:
+    name: ConcurrencyTest
+  cloud:
+    zookeeper:
+      connect-string: "127.0.0.1:2181"
+      discovery:
+        enabled: true
   jpa:
     hibernate:
       ddl-auto: create
@@ -13,3 +20,7 @@ spring:
       port: 6379
       database: 0
       password: redis
+
+logging:
+  level:
+    org.apache.zookeeper.ClientCnxn: WARN
