@@ -32,7 +32,8 @@ public class ItemJpaAdapter implements ItemLoadPort, ItemSavePort {
     }
 
     @Override
-    public ItemJpaEntity save(Item item) {
-        return repository.save(ItemMapper.mapPessimisticToItemPessimisticJpa(item));
+    public Item save(Item item) {
+        ItemJpaEntity savedEntity = repository.save(ItemMapper.mapPessimisticToItemPessimisticJpa(item));
+        return ItemMapper.mapItemPessimisticJpaToPessimistic(savedEntity);
     }
 }

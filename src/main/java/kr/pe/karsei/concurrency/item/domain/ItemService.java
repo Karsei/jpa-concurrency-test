@@ -31,6 +31,6 @@ public class ItemService implements ItemUpdateUseCase {
 
     private Item decreaseStockAndSave(Item item) {
         item.decreaseStock();
-        return ItemMapper.mapItemPessimisticJpaToPessimistic(itemSavePort.save(item));
+        return itemSavePort.save(item);
     }
 }
