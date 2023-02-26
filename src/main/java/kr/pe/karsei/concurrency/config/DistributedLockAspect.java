@@ -26,20 +26,24 @@ public class DistributedLockAspect {
         Method method = signature.getMethod();
         DistributedLock distributedLock = method.getAnnotation(DistributedLock.class);
 
-        String key = REDISSON_KEY_PREFIX + CustomSpringELParser.getDynamicValue(signature.getParameterNames(), joinPoint.getArgs(), distributedLock.key());
+        if (distributedLock.category().equals(DistributedLockCategory.REDISSON)) {
+            String key = REDISSON_KEY_PREFIX + CustomSpringELParser.getDynamicValue(signature.getParameterNames(), joinPoint.getArgs(), distributedLock.key());
 
-        RLock rLock = redissonClient.getLock(key);
+            RLock rLock = redissonClient.getLock(key);
 
-        try {
-            boolean available = rLock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(), distributedLock.timeUnit());
-            if (!available) return false;
+            try {
+                boolean available = rLock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(), distributedLock.timeUnit());
+                if (!available) return false;
 
-            return lockTransaction.proceed(joinPoint);
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-            throw new InterruptedException();
-        } finally {
-            rLock.unlock();
+                return lockTransaction.proceed(joinPoint);
+            } catch (Exception e) {
+                Thread.currentThread().interrupt();
+                throw new InterruptedException();
+            } finally {
+                rLock.unlock();
+            }
         }
+
+        throw new InterruptedException("지원하지 않는 Lock 사용 방식입니다.");
     }
 }

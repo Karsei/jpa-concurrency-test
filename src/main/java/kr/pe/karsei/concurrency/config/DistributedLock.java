@@ -28,4 +28,9 @@ public @interface DistributedLock {
      * Lock 획득 시간
      */
     long leaseTime() default 3L;
+
+    /**
+     * Lock 사용 종류
+     */
+    DistributedLockCategory category() default DistributedLockCategory.REDISSON;
 }
