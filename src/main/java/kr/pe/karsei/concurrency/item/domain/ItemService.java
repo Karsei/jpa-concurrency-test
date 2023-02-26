@@ -1,7 +1,7 @@
 package kr.pe.karsei.concurrency.item.domain;
 
 import kr.pe.karsei.concurrency.config.DistributedLock;
-import kr.pe.karsei.concurrency.item.mapper.ItemMapper;
+import kr.pe.karsei.concurrency.config.DistributedLockCategory;
 import kr.pe.karsei.concurrency.item.port.in.ItemUpdateUseCase;
 import kr.pe.karsei.concurrency.item.port.out.ItemLoadPort;
 import kr.pe.karsei.concurrency.item.port.out.ItemSavePort;
@@ -26,6 +26,13 @@ public class ItemService implements ItemUpdateUseCase {
     @Override
     public Item updateWithPessimisticLock(Long seqNo) {
         Item item = itemLoadPort.findByIdWithLock(seqNo);
+        return decreaseStockAndSave(item);
+    }
+
+    @DistributedLock(key = "#seqNo", category = DistributedLockCategory.ZOOKEEPER)
+    @Override
+    public Item updateWithZookeeperLock(Long seqNo) {
+        Item item = itemLoadPort.findById(seqNo);
         return decreaseStockAndSave(item);
     }
 

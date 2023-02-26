@@ -102,4 +102,43 @@ class ItemServiceTest {
         assertThat(afterItem.get().getStock()).isEqualTo(BEFORE_STOCK_COUNT - PEOPLE_COUNT);
         logger.info("Before: {}, After: {}", BEFORE_STOCK_COUNT, afterItem.get().getStock());
     }
+
+    @Test
+    void testIfZookeeperLockCanBeSuccess() throws InterruptedException {
+        // given
+        final int PEOPLE_COUNT = 100;
+        final int THREAD_COUNT = 10;
+        final long SEQNO = 1L;
+
+        ExecutorService service = Executors.newFixedThreadPool(THREAD_COUNT);
+        CountDownLatch latch = new CountDownLatch(PEOPLE_COUNT);
+        ItemJpaEntity beforeItem = repository.findById(SEQNO)
+                .orElseThrow(() -> new IllegalStateException("테스트 오류"));
+
+        final int BEFORE_STOCK_COUNT = beforeItem.getStock();
+
+        // when
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < PEOPLE_COUNT; i++) {
+            service.execute(() -> {
+                try {
+                    itemService.updateWithZookeeperLock(SEQNO);
+                }
+                catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+                latch.countDown();
+            });
+        }
+        latch.await();
+
+        long estimated = System.currentTimeMillis() - startTime;
+        logger.info("estimated: {}ms", estimated);
+        Optional<ItemJpaEntity> afterItem = repository.findById(SEQNO);
+
+        // then
+        assertThat(afterItem).isPresent();
+        assertThat(afterItem.get().getStock()).isEqualTo(BEFORE_STOCK_COUNT - PEOPLE_COUNT);
+        logger.info("Before: {}, After: {}", BEFORE_STOCK_COUNT, afterItem.get().getStock());
+    }
 }
