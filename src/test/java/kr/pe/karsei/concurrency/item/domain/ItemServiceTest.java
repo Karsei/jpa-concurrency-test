@@ -15,7 +15,6 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// https://velog.io/@znftm97/%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0%ED%95%98%EA%B8%B0-V3-%EB%B6%84%EC%82%B0-DB-%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-%EB%B6%84%EC%82%B0-%EB%9D%BDDistributed-Lock-%ED%99%9C%EC%9A%A9
 @SpringBootTest
 class ItemServiceTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
@@ -26,7 +25,7 @@ class ItemServiceTest {
     private ItemJpaRepository repository;
 
     @Test
-    void testIfPessimisticLockTestCanBeSuccess() throws InterruptedException {
+    void testIfPessimisticLockCanBeSuccess() throws InterruptedException {
         // given
         final int PEOPLE_COUNT = 100;
         final int THREAD_COUNT = 10;
@@ -65,7 +64,7 @@ class ItemServiceTest {
     }
 
     @Test
-    void testIfRedisLockTestCanBeSuccess() throws InterruptedException {
+    void testIfRedisLockCanBeSuccess() throws InterruptedException {
         // given
         final int PEOPLE_COUNT = 100;
         final int THREAD_COUNT = 10;
